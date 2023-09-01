@@ -107,6 +107,35 @@ def gauss1D(size, sigma):
 def halfCirlce(x):
     return np.sqrt(200**2- (x-270)**2)
 
+
+def calcSR(gOrder, points, ker, sig):
+    distanceE = []
+    bx, by = getBaseline(points, ker, sig)
+
+    
+    dx = np.diff(bx)
+    dy = np.diff(by)
+ 
+    polyGon = shapely.geometry.LineString(gOrder)
+    
+    for j in range(1,len(dx)):
+        xs, ys = fb.createNormalLine(bx[j], by[j], dx[j], dy[j])
+        
+        stack = np.stack((xs,ys), axis=-1)
+        line = shapely.geometry.LineString(stack)
+    
+        if(polyGon.intersects(line) and j > 0):
+            #intersection geometry
+            interPoints = polyGon.intersection(line)
+            
+            #intersection point
+            mx, my = fb.proccessIntersectionPoint(interPoints, bx[j], by[j])
+            
+            euD = fb.euclidDist(bx[j], by[j], mx, my)
+            distanceE.append(euD)
+    
+    return np.average(distanceE)
+    
 cadImage = cv2.imread("C:/Users/v.jayaweera/Documents/Optimize_Sigma/CAD_1px.tif", cv2.IMREAD_GRAYSCALE)
 stlImage = cv2.imread("C:/Users/v.jayaweera/Documents/Optimize_Sigma/STL_1px.tif", cv2.IMREAD_GRAYSCALE)
 
@@ -114,8 +143,8 @@ stlImage = cv2.imread("C:/Users/v.jayaweera/Documents/Optimize_Sigma/STL_1px.tif
 goal_x, goal_y = getXYPoints(cadImage)
 x, y = getXYPoints(stlImage)
 
-kernel = 10
-sigma = 200
+kernel = 319
+sigma = 300
 
 bestDist = 10000000
 bestK = 10
@@ -125,51 +154,30 @@ bestS = 5
 
 goalOrder = np.stack((goal_x, goal_y), axis=-1)
 
-for i in range(200,400): #kernel sizes
-    distanceE = []
+while True:
+    sr_sig = calcSR(goalOrder, [x,y], kernel, sigma+1)
+    sr_ker = calcSR(goalOrder, [x,y], kernel+2, sigma)
+    print(sr_sig, sr_ker)
+    dist = min(sr_sig, sr_ker)
     
-    for s in range(300,310): # sigma values        
-        bx, by = getBaseline([x,y], i, s)
+    if sr_sig < sr_ker:
+        sigma = sigma + 1
+    else:
+        kernel = kernel +2 
+    
+    basex, basey = getBaseline([x,y], kernel, sigma)
+    
+    if dist < bestDist:
+        bestK = kernel 
+        bestS = sigma
+        bestDist = dist
+        print("New best kernel: {}  and sigma: {}".format(bestK, bestS))
+        plt.title("Kernel {} and sigma {}".format(bestK, bestS))
+        plt.plot(x,y, 'b.-')
+        plt.plot(goal_x, goal_y, 'g.-')
+        plt.plot(basex, basey, 'r.-')
+        plt.show()
 
-        
-        dx = np.diff(bx)
-        dy = np.diff(by)
-     
-        
-        polyGon = shapely.geometry.LineString(goalOrder)
-        
-        for j in range(1,len(dx)):
-            xs, ys = fb.createNormalLine(bx[j], by[j], dx[j], dy[j])
-            plt.plot(bx[j], by[j], 'r.-')
-            
-            stack = np.stack((xs,ys), axis=-1)
-            line = shapely.geometry.LineString(stack)
-        
-            if(polyGon.intersects(line) and j > 0):
-                #intersection geometry
-                interPoints = polyGon.intersection(line)
-                
-                #intersection point
-                mx, my = fb.proccessIntersectionPoint(interPoints, bx[j], by[j])
-                
-                euD = fb.euclidDist(bx[j], by[j], mx, my)
-                distanceE.append(euD)
-         
-        
-    
-    
-        if np.average(distanceE) < bestDist:
-            bestK = i 
-            bestS = s
-            bestDist = np.average(distanceE)
-            print("New best ", bestK, bestS)
-            plt.title("Kernel {} and sigma {}".format(i,s))
-            plt.plot(x,y, 'b.-')
-            plt.plot(goal_x, goal_y, 'g.-')
-            plt.plot(bx, by, 'r.-')
-            plt.show()
-            
-            print(i/len(x))
     
 
 
