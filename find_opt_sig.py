@@ -75,17 +75,6 @@ def getXYPoints(image):
     y = np.array(finalOrder[:,1])
     
     return x,y
-
-def addNearestPadding(arr, k):
-    #include assertion here
-    paddingLen = math.floor(k/2)
-    
-    newArr = np.full((len(arr)+paddingLen*2),fill_value=arr[0]) 
-    newArr[paddingLen:len(arr)+paddingLen] = arr
-    
-    newArr[len(arr) + paddingLen: -1] = arr[-1]
-    
-    return newArr
     
     
 def getBaseline(points, s, k):
@@ -116,11 +105,6 @@ def gauss1D(size, sigma):
     gaussFilter = gaussFilter/np.sum(gaussFilter)
    
     return gaussFilter    
-
-
-def halfCirlce(x):
-    return np.sqrt(200**2- (x-270)**2)
-
 
 def calcSR(gOrder, points, ker, sig):
     distanceE = []
