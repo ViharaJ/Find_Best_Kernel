@@ -9,12 +9,14 @@ value is what's trying to be minimized.
 
 How to use:  
     
-OPTIONA STEP: If you dont' have the exact contour and STL file seperated into two respective 
-images, use HSV_CoLour_Picker.py in this repo to seperate them. 
+OPTIONAL STEP: If you dont' have the exact contour and STL file seperated into two respective 
+images, use HSV_CoLour_Picker.py in this repo to create the images.
 
-    1. Change cadImage
-    2. Change stlImage
+    1. Change cadImage to CAD image file
+    2. Change stlImage to STL image file
     3. Modify kernel, sigma starting values to your liking
+        - sigma: sigma value for kernel 
+        - kernel: kernel full length (must be odd)
     4. Run
     
     
@@ -172,10 +174,6 @@ bestS = 5
 
 
 goalOrder = np.stack((goal_x, goal_y), axis=-1)
-
-'''
-run through basex
-'''
 basex, basey = basex, basey = getBaseline([x,y], kernel, sigma)
 
 while len(basex) >= len(goal_x):    
