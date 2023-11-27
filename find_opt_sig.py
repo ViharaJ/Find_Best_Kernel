@@ -8,6 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 import Module.Functions as fb
 import shapely
 import math
+from scipy.ndimage import gaussian_filter1d
 
 def getXYPoints(image):
     conts, hier = cv2.findContours(image, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
@@ -66,7 +67,7 @@ def addNearestPadding(arr, k):
     paddingLen = math.floor(k/2)
     
     newArr = np.full((len(arr)+paddingLen*2),fill_value=arr[0])
-    
+    git 
     newArr[paddingLen:len(arr)+paddingLen] = arr
     
     newArr[len(arr) + paddingLen: -1] = arr[-1]
@@ -111,7 +112,8 @@ def halfCirlce(x):
 def calcSR(gOrder, points, ker, sig):
     distanceE = []
     bx, by = getBaseline(points, ker, sig)
-
+    # bx = gaussian_filter1d(points[0], bestK)
+    # by = gaussian_filter1d(points[1], bestK)
     
     dx = np.diff(bx)
     dy = np.diff(by)
@@ -136,14 +138,14 @@ def calcSR(gOrder, points, ker, sig):
     
     return np.average(distanceE)
     
-cadImage = cv2.imread("C:/Users/v.jayaweera/Documents/Optimize_Sigma/CAD_1px.tif", cv2.IMREAD_GRAYSCALE)
-stlImage = cv2.imread("C:/Users/v.jayaweera/Documents/Optimize_Sigma/STL_1px.tif", cv2.IMREAD_GRAYSCALE)
+cadImage = cv2.imread("C:/Users/v.jayaweera/Documents/Anne/Optimize_Sigma/CAD_1px.tif", cv2.IMREAD_GRAYSCALE)
+stlImage = cv2.imread("C:/Users/v.jayaweera/Documents/Anne/Optimize_Sigma/STL_1px.tif", cv2.IMREAD_GRAYSCALE)
 
 
 goal_x, goal_y = getXYPoints(cadImage)
 x, y = getXYPoints(stlImage)
 
-kernel = 319
+kernel = 200
 sigma = 300
 
 bestDist = 10000000
@@ -154,19 +156,23 @@ bestS = 5
 
 goalOrder = np.stack((goal_x, goal_y), axis=-1)
 
-while True:
+'''
+run through basex
+'''
+while True:    
     sr_sig = calcSR(goalOrder, [x,y], kernel, sigma+1)
     sr_ker = calcSR(goalOrder, [x,y], kernel+2, sigma)
     print(sr_sig, sr_ker)
-    dist = min(sr_sig, sr_ker)
+    dist = min(sr_sig, bestDist)
     
     if sr_sig < sr_ker:
         sigma = sigma + 1
     else:
         kernel = kernel +2 
-    
+        
+    kernel = kernel + 2 
     basex, basey = getBaseline([x,y], kernel, sigma)
-    
+    print("here")
     if dist < bestDist:
         bestK = kernel 
         bestS = sigma
