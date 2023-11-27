@@ -1,3 +1,17 @@
+"""
+This script finds the optimal sigma and kernel size such that the baseline 
+it creates is at least 70% the length of the original contour
+
+How to use:  
+    1. Change cadImage
+    2. Change stlImage
+    3. Modify kernel, sigma to your liking
+    4. Run
+    
+How it works: 
+    
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
@@ -66,8 +80,7 @@ def addNearestPadding(arr, k):
     #include assertion here
     paddingLen = math.floor(k/2)
     
-    newArr = np.full((len(arr)+paddingLen*2),fill_value=arr[0])
-    git 
+    newArr = np.full((len(arr)+paddingLen*2),fill_value=arr[0]) 
     newArr[paddingLen:len(arr)+paddingLen] = arr
     
     newArr[len(arr) + paddingLen: -1] = arr[-1]
@@ -159,7 +172,9 @@ goalOrder = np.stack((goal_x, goal_y), axis=-1)
 '''
 run through basex
 '''
-while True:    
+basex, basey = basex, basey = getBaseline([x,y], kernel, sigma)
+
+while len(basex) >= len(goal_x):    
     sr_sig = calcSR(goalOrder, [x,y], kernel, sigma+1)
     sr_ker = calcSR(goalOrder, [x,y], kernel+2, sigma)
     print(sr_sig, sr_ker)
