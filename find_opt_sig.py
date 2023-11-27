@@ -1,14 +1,34 @@
 """
 This script finds the optimal sigma and kernel size such that the baseline 
-it creates is at least 70% the length of the original contour
+it creates is at least 70% the length of the original contour. 
+
+The script uses the exact contour to create the baseline. Then it calculates
+the surface roughness (or average distance) to the STL file. This roughness (or average distance)
+value is what's trying to be minimized.
+
 
 How to use:  
+    
+OPTIONA STEP: If you dont' have the exact contour and STL file seperated into two respective 
+images, use HSV_CoLour_Picker.py in this repo to seperate them. 
+
     1. Change cadImage
     2. Change stlImage
-    3. Modify kernel, sigma to your liking
+    3. Modify kernel, sigma starting values to your liking
     4. Run
     
+    
+    
 How it works: 
+    1. getXYPoints() gets the exact contour, and recreates the contour so there 
+    are no duplicate pionts
+    2. We enter the loop
+    3. We calculate surface roughness two ways
+        a. Increase the kernel size by 2 
+        b. Increase sigma by 1
+    4. The change which yielded the lower surface roughness value will be used in the next iteration
+    5. We exit the loop when the baseline creates a contour with less than 70% of 
+    the points of the original contour returned in step 1. 
     
 """
 
@@ -142,7 +162,7 @@ stlImage = cv2.imread("C:/Users/v.jayaweera/Documents/Anne/Optimize_Sigma/STL_1p
 goal_x, goal_y = getXYPoints(cadImage)
 x, y = getXYPoints(stlImage)
 
-kernel = 200
+kernel = 201
 sigma = 300
 
 bestDist = 10000000
@@ -178,9 +198,10 @@ while len(basex) >= len(goal_x):
         bestDist = dist
         print("New best kernel: {}  and sigma: {}".format(bestK, bestS))
         plt.title("Kernel {} and sigma {}".format(bestK, bestS))
-        plt.plot(x,y, 'b.-')
-        plt.plot(goal_x, goal_y, 'g.-')
-        plt.plot(basex, basey, 'r.-')
+        plt.plot(x,y, 'b.-', label="Exact contour")
+        plt.plot(goal_x, goal_y, 'g.-', label="STL")
+        plt.plot(basex, basey, 'r.-', label="Baseline")
+        plt.legend()
         plt.show()
 
     

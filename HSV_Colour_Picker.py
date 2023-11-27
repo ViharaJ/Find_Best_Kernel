@@ -1,5 +1,7 @@
-#COPED FROM HERE https://stackoverflow.com/a/59906154/22034139
-#All credits to nathancy 
+"""
+COPED FROM HERE https://stackoverflow.com/a/59906154/22034139
+All credits to nathancy
+"""
 import cv2
 import numpy as np
 
