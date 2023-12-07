@@ -162,6 +162,8 @@ stlImage = cv2.imread("C:/Users/v.jayaweera/Documents/Anne/Optimize_Sigma/STL_1p
 
 
 goal_x, goal_y = getXYPoints(cadImage)
+
+print("Length of contour, unique points only: ", len(goal_x))
 x, y = getXYPoints(stlImage)
 
 kernel = 201
