@@ -157,8 +157,8 @@ def calcSR(gOrder, points, ker, sig):
     
     return np.average(distanceE)
     
-cadImage = cv2.imread("C:/Users/v.jayaweera/Documents/Anne/Optimize_Sigma/CAD_1px.tif", cv2.IMREAD_GRAYSCALE)
-stlImage = cv2.imread("C:/Users/v.jayaweera/Documents/Anne/Optimize_Sigma/STL_1px.tif", cv2.IMREAD_GRAYSCALE)
+cadImage = cv2.imread("CAD_1px.tif", cv2.IMREAD_GRAYSCALE)
+stlImage = cv2.imread("STL_1px.tif", cv2.IMREAD_GRAYSCALE)
 
 
 goal_x, goal_y = getXYPoints(cadImage)
